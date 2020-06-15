@@ -9,7 +9,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from translations.querysets import TranslatableQuerySet
 
-
 __docformat__ = 'restructuredtext'
 
 
@@ -54,6 +53,12 @@ class Translation(models.Model):
             translation=self.text,
         )
 
+    def save(self, *args, **kwargs):
+        if not Translation.objects.filter(object_id=self.object_id, field=self.field, language=self.language).exists():
+            return super(Translation, self).save(*args, **kwargs)
+        else:
+            pass
+
     class Meta:
         unique_together = ('content_type', 'object_id', 'field', 'language',)
         verbose_name = _('translation')
@@ -89,14 +94,14 @@ class Translatable(models.Model):
                 fields = []
                 for field in cls._meta.get_fields():
                     if isinstance(
-                                field,
-                                (models.CharField, models.TextField,)
-                            ) and not isinstance(
-                                field,
-                                models.EmailField
-                            ) and not (
-                                hasattr(field, 'choices') and field.choices
-                            ):
+                            field,
+                            (models.CharField, models.TextField,)
+                    ) and not isinstance(
+                        field,
+                        models.EmailField
+                    ) and not (
+                            hasattr(field, 'choices') and field.choices
+                    ):
                         fields.append(field)
             else:
                 fields = [
