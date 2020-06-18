@@ -54,7 +54,8 @@ class Translation(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        if not Translation.objects.filter(object_id=self.object_id, field=self.field, language=self.language).exists():
+        if not Translation.objects.filter(object_id=self.object_id, field=self.field, language=self.language,
+                                          content_type_id=self.content_type_id).exists():
             return super(Translation, self).save(*args, **kwargs)
         else:
             pass
