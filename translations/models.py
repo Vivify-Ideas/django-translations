@@ -58,7 +58,8 @@ class Translation(models.Model):
                                           content_type_id=self.content_type_id).exists():
             return super(Translation, self).save(*args, **kwargs)
         else:
-            pass
+            Translation.objects.filter(object_id=self.object_id, field=self.field, language=self.language,
+                                       content_type_id=self.content_type_id).update(text=self.text)
 
     class Meta:
         unique_together = ('content_type', 'object_id', 'field', 'language',)
